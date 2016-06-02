@@ -4,7 +4,7 @@ func getName():
 	return "Intro"
 
 func run():
-	.setText("lol")
+	.setText("It's a brand new day, and in front of you you see the [b]Geology school for stubborn minds \"[i]The Rock[/i]\"[/b]")
 	.addOption("Ciao", "mesg2")
 	.addOption("no", "mesg3")
 

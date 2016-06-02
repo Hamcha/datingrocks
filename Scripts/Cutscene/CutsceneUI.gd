@@ -6,6 +6,9 @@ onready var questionText = get_node(questionTextPath)
 export(NodePath) var buttonContainerPath
 onready var buttonContainer = get_node(buttonContainerPath)
 
+export(NodePath) var buttonReferencePath
+onready var buttonReference = get_node(buttonReferencePath).duplicate()
+
 var is_ready = false
 signal ready()
 
@@ -15,9 +18,8 @@ func _onOptionClick(strid):
 	emit_signal("optionClick", strid)
 
 func _makeButton(text):
-	var btn = Button.new()
+	var btn = buttonReference.duplicate()
 	btn.set_text(text)
-	btn.set_v_size_flags(btn.SIZE_EXPAND_FILL)
 	btn.connect("pressed", self, "_onOptionClick", [text])
 	return btn
 
@@ -34,5 +36,6 @@ func setText(text):
 	questionText.set_bbcode(text)
 
 func _ready():
+	buttonContainer.remove_child(get_node(buttonReferencePath))
 	emit_signal("ready")
 	is_ready = true

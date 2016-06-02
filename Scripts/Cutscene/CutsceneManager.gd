@@ -7,6 +7,6 @@ export(NodePath) var cutsceneUIPath
 onready var cutsceneUI = get_node(cutsceneUIPath)
 
 func _ready():
-	cutscene.setUI(cutsceneUI)
 	print("Loaded cutscene: " + cutscene.getName())
+	cutscene.setUI(cutsceneUI)
 	cutscene.run()
