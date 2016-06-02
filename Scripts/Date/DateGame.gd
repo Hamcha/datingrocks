@@ -1,6 +1,6 @@
 extends Node
 
-var Date = preload("res://Classes/Date.gd")
+var Date = load("../Classes/Date.gd")
 
 export(NodePath) var dateUIPath
 onready var dateUI = get_node(dateUIPath)

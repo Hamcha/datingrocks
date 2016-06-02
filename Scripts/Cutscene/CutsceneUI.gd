@@ -14,23 +14,23 @@ signal optionClick(strid)
 func _onOptionClick(strid):
 	emit_signal("optionClick", strid)
 
-func _makeButton(strid, text):
+func _makeButton(text):
 	var btn = Button.new()
 	btn.set_text(text)
 	btn.set_v_size_flags(btn.SIZE_EXPAND_FILL)
-	btn.connect("pressed", self, "_onOptionClick", [strid])
+	btn.connect("pressed", self, "_onOptionClick", [text])
 	return btn
 
 func resetOptions():
 	for child in buttonContainer.get_children():
 		buttonContainer.remove_child(child)
 
-func addOption(strid, text):
-	var btn = _makeButton(strid, text)
+func addOption(text):
+	var btn = _makeButton(text)
 	buttonContainer.add_child(btn)
 
 func setText(text):
-	#TODO: Add animation
+	#TODO Add animation
 	questionText.set_bbcode(text)
 
 func _ready():
