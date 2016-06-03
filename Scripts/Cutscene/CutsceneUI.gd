@@ -13,12 +13,15 @@ signal optionClick(strid)
 signal fadedIn()
 
 var animating  = false
+var pausing    = false
+var remPause   = 0
 var text       = ""
 var textLength = 0
 var curChar    = 0
 var choices    = []
 var globDelta  = 0
 var charTime   = 0.04
+var lastCmd    = 0
 
 func _onOptionClick(strid):
 	emit_signal("optionClick", strid)
@@ -34,11 +37,22 @@ func _addOptions():
 		var btn = _makeButton(text)
 		buttonContainer.add_child(btn)
 
+func _runCommand(cmd):
+	var parts = cmd.split(":")
+	if parts[0] == "P":
+		pausing = true
+		remPause = float(parts[1])
+
 func _ready():
 	buttonContainer.remove_child(get_node(buttonReferencePath))
 	set_process(true)
 
 func _process(delta):
+	if pausing:
+		remPause -= delta
+		if remPause <= 0:
+			pausing = false
+		return
 	if animating:
 		# Add delta
 		globDelta += delta
@@ -56,10 +70,32 @@ func _process(delta):
 		
 		# Extract substring with already faded in characters
 		var txt = text.substr(0, curChar)
+		
+		# Parse command, if encountered
+		var closed = txt.find_last("}")
+		var opened = txt.find_last("{")
+		# Trim it
+		if opened > closed:
+			curChar = text.find("}", opened) + 1
+		# Find and execute
+		if opened > lastCmd:
+			var cmd = text.substr(opened + 1, curChar - opened - 2)
+			_runCommand(cmd)
+			lastCmd = opened
+		
+		# Trim commands
+		while true:
+			opened = txt.find("{")
+			if opened < 0:
+				break
+			closed = txt.find("}")
+			if closed < 0:
+				break
+			txt = txt.left(opened) + txt.right(closed + 1)
 
 		# Trim bbcode
-		var closed = txt.find_last("]")
-		var opened = txt.find_last("[")
+		closed = txt.find_last("]")
+		opened = txt.find_last("[")
 		if opened > closed:
 			curChar = text.find("]", opened) + 1
 			txt = text.substr(0, curChar)
@@ -68,13 +104,18 @@ func _process(delta):
 		questionText.set_bbcode(txt)
 		
 		# Still not at the end? Show next character
-		if curChar < textLength:
+		if !pausing && curChar < textLength:
 			# Trim bbcode AGAIN (optimize in the future maybe?)
 			txt = text.substr(0, curChar + 1)
-			var closed = txt.find_last("]")
-			var opened = txt.find_last("[")
+			closed = txt.find_last("]")
+			opened = txt.find_last("[")
 			if opened > closed:
 				curChar = text.find("]", opened) + 1
+			# Trim commands AGAIN (like above)
+			closed = txt.find_last("}")
+			opened = txt.find_last("{")
+			if opened > closed:
+				curChar = text.find("}", opened) + 1
 			
 			# Use globDelta percent as shade of white for next character
 			var nextCol = Color(1, 1, 1, globDelta / charTime)
@@ -87,6 +128,8 @@ func runScene():
 	curChar    = 0
 	globDelta  = 0
 	animating  = true
+	pausing    = false
+	remPause   = 0
 
 func addOption(text):
 	choices.append(text)

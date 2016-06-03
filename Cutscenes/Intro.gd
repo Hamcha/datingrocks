@@ -7,8 +7,8 @@ func getInitialScene():
 	return "mesg1"
 
 func mesg1():
-	var text = "It's a brand new day, and in front of you you see the [b]Geology school for stubborn minds \"[i]The Rock[/i]\"[/b]\n"
-	text += "Inside you will find all sorts of minerals waiting to be \"thoroughly studied\" and.. shall we say, your rockmate?"
+	var text = "It's a brand new day{P:0.1}, and in front of you you see the [b]Geology school for stubborn minds \"[i]The Rock[/i]\"[/b].{P:1}\n"
+	text += "Inside you will find all sorts of minerals waiting to be {P:0.5}\"thoroughly studied\"{P:0.3} and..{P:0.6} shall we say,{P:0.1} your rockmate?"
 	.setText(text)
 	.addOption("Awesome, I can't wait to get in!", "mesg2_good")
 	.addOption("Wait, you want me to make out with some ROCKS?", "mesg2_bad")
@@ -24,4 +24,5 @@ func mesg2_bad():
 	.addOption("Oh.", "mesg3")
 
 func mesg3():
-	pass
+	.setText("Since most of the game is missing, you can jump to parts that are in development but are somewhat present.")
+	.addOption("Date a rock!", "jumpdate")
